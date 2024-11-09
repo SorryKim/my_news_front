@@ -1,41 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import NewsCard from './NewsCard';
-import { fetchNews } from '../services/newsAPI';
+import fetchNews from '../services/newsAPI'; // 기본 내보내기로 가져오기
 
 function NewsList() {
-  const [news, setNews] = useState([]); // 뉴스 데이터 상태
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [error, setError] = useState(null); // 에러 상태
+  const [news, setNews] = useState([]);
 
   useEffect(() => {
     const loadNews = async () => {
       try {
         const data = await fetchNews();
-        console.log("News fetched in React:", data); // 디버깅 로그
         setNews(data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error in NewsList:", err);
-        setError("Failed to load news");
-        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching news:", error);
       }
     };
     loadNews();
   }, []);
 
-  if (loading) return <p>Loading news...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
     <div>
       <h1>Latest News</h1>
-      {news.length > 0 ? (
-        news.map((item, index) => (
-          <NewsCard key={index} {...item} />
-        ))
-      ) : (
-        <p>No news available.</p>
-      )}
+      {news.map((item, index) => (
+        <div key={index} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+          <h2>{item.title}</h2>
+          <p>{item.summary}</p>
+          <a href={item.link} target="_blank" rel="noopener noreferrer">Read More</a>
+        </div>
+      ))}
     </div>
   );
 }
